@@ -1,0 +1,43 @@
+CREATE DATABASE aula7exemplo1
+
+USE aula7exemplo1
+
+
+CREATE TABLE Teste (
+	ID INT NOT NULL PRIMARY KEY,
+	campoA VARCHAR(50) NOT NULL,
+	campoB VARCHAR(50) NULL
+)
+
+INSERT INTO Teste VALUES (1, 'Um texto qualquer', 'Outro texto')
+INSERT INTO Teste VALUES (2, NULL, 'Novo texto')
+INSERT INTO Teste VALUES (3, 'Terceiro texto', 'Nova tentativa')
+
+SELECT * FROM Teste
+
+BEGIN TRANSACTION TesteTran
+	BEGIN TRY
+		INSERT INTO Teste VALUES (10, 'Um texto qualquer', 'Outro texto')
+		INSERT INTO Teste VALUES (20, NULL, 'Novo texto')
+		INSERT INTO Teste VALUES (30, 'Terceiro texto', 'Nova tentativa')
+	END TRY
+	BEGIN CATCH
+		SELECT
+			ERROR_NUMBER() AS NumeroErro,
+			ERROR_LINE() AS LinhaComErro,
+			ERROR_MESSAGE() AS MensagemErro
+		IF @@TRANCOUNT > 0
+			ROLLBACK TRANSACTION TesteTran
+	END CATCH
+	IF @@TRANCOUNT > 0
+		COMMIT TRANSACTION TesteTran
+		
+PRINT @@TRANCOUNT
+BEGIN TRAN
+	PRINT @@TRANCOUNT
+	BEGIN TRAN
+		PRINT @@TRANCOUNT
+		COMMIT
+		PRINT @@TRANCOUNT
+		COMMIT
+		PRINT @@TRANCOUNT
